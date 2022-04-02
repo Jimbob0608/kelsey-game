@@ -20,6 +20,7 @@ public class PlayerMovement : MonoBehaviour {
     public bool arrowRotate = true;
     public bool mouseRotate = false;
     public float walkSpeed = 5f;
+    public float jumpForce = 10f;
     public float turnSpeed = 200f;
     public Rigidbody2D rigidBody;
 
@@ -32,24 +33,25 @@ public class PlayerMovement : MonoBehaviour {
     void Update() {
         checkMovementInput();
         mousePosition = playerCamera.ScreenToWorldPoint(Input.mousePosition);
+        if (player.health <= 0) {
+            death();
+        }
     }
 
     // Update called 50 times per second to ensure frame rate does not affect speed
     void FixedUpdate() {
         movePlayer();
         checkRotateInput();
-        if (player.health <= 0) {
-            death();
-        }
     }
 
     private void movePlayer() {
         rigidBody.MovePosition(rigidBody.position + _movement * _currentSpeed * Time.fixedDeltaTime);
     }
-
     private void checkMovementInput() {
         _movement.x = Input.GetAxisRaw("Horizontal");
-        _movement.y = Input.GetAxisRaw("Vertical");
+        if (Input.GetKey(KeyCode.Space)) {
+            rigidBody.AddForce(transform.up * jumpForce, ForceMode2D.Impulse);
+        }
     }
     private void checkRotateInput() {
         if (mouseRotate) {
@@ -72,7 +74,6 @@ public class PlayerMovement : MonoBehaviour {
         float rotationAngle = Mathf.Atan2(lookDirection.y, lookDirection.x) * Mathf.Rad2Deg - 90f;
         rigidBody.rotation = rotationAngle;
     }
-
     private void rotateWithKeys() {
         _isRotating = true;
         if (Input.GetAxis("Rotate") > 0) {
@@ -83,7 +84,6 @@ public class PlayerMovement : MonoBehaviour {
         rigidBody.rotation =
             (rigidBody.rotation + (rotationDegree * turnSpeed * Time.fixedDeltaTime));
     }
-    
     private void death() {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
