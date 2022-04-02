@@ -38,8 +38,8 @@ public class PlayerMovement : MonoBehaviour {
     void FixedUpdate() {
         movePlayer();
         checkRotateInput();
-        void death() {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        if (player.health <= 0) {
+            death();
         }
     }
 
@@ -82,5 +82,9 @@ public class PlayerMovement : MonoBehaviour {
         }
         rigidBody.rotation =
             (rigidBody.rotation + (rotationDegree * turnSpeed * Time.fixedDeltaTime));
+    }
+    
+    private void death() {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
